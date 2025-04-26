@@ -1,0 +1,105 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+df = pd.read_csv("C:\\Users\\acer\\Downloads\\data.csv", low_memory=False)
+
+print(df.shape)  # Checking the dimensions of the dataset
+
+print(df.columns)  # Listing the columns of the dataset
+
+print(df.head())  # Viewing the first five rows of the dataset
+
+print(df.tail())  # Viewing the last five rows of the dataset
+
+print(df.info())  # Viewing the information about the dataset
+
+print(df.describe())  # Descriptive statistics of the dataset
+
+print(df.isnull().sum())  # Checking for missing values in the dataset and their total count
+
+print(df.max())  # Viewing the maximum values in the dataset
+
+print(df.min())  # Viewing the minimum values in the dataset
+
+print(df.median(numeric_only=True))  # Viewing the median values in the dataset
+
+print(df.mean(numeric_only=True))  # Viewing the mean values in the dataset
+
+print(df.mode(numeric_only=True))  # Viewing the mode values in the dataset
+
+print(df.count())  # Counting non-null values in each column
+
+
+df = pd.read_csv("C:\\Users\\acer\\Downloads\\data.csv",low_memory=False)
+df
+
+df["total_vaccinations"] = pd.to_numeric(df["total_vaccinations"], errors="coerce")
+latest = df.sort_values("date").groupby("location").last()
+latest = latest.dropna(subset=["total_vaccinations"])
+latest_sorted = latest.sort_values("total_vaccinations", ascending=False)
+top_20 = latest_sorted.head(20)
+
+plt.figure(figsize=(12, 6))
+plt.bar(top_20.index, top_20["total_vaccinations"], color="skyblue")
+plt.title("Top 20 Countries by Total Vaccinations")
+plt.xlabel("Country")
+plt.ylabel("Total Vaccinations")
+plt.xticks(rotation=90)
+
+
+#Daily Vaccination Trends for a Specific Country
+
+df = pd.read_csv("C:\\Users\\acer\\Downloads\\data.csv", low_memory=False)
+country = "India"
+country_data = df[df['location'] == country].copy()
+
+country_data.loc[:, 'daily_vaccinations'] = pd.to_numeric(country_data['daily_vaccinations'], errors='coerce')
+
+plt.figure(figsize=(12, 6))
+plt.plot(country_data['date'], country_data['daily_vaccinations'], label='Daily Vaccinations')
+plt.xticks(rotation=45)
+plt.title(f'Daily Vaccination Trend - {country}')
+plt.xlabel('Date')
+plt.ylabel('Daily Vaccinations')
+
+
+
+
+#Vaccinations per Hundred Analysis
+df = pd.read_csv("C:\\Users\\acer\\Downloads\\data.csv",low_memory=False)
+df
+df['total_vaccinations_per_hundred'] = pd.to_numeric(df['total_vaccinations_per_hundred'], errors='coerce')
+latest = df[df['location'] != '#country+name'].sort_values('date').groupby('location').last()
+
+top_10_per_hundred = latest['total_vaccinations_per_hundred'].sort_values(ascending=False).head(10)
+top_10_per_hundred.plot(kind='barh', color='red', title='Top 10 Countries by Vaccinations per Hundred')
+plt.xlabel('Vaccinations per Hundred')
+
+
+# Fully Vaccinated People vs Total Vaccinations
+
+df = pd.read_csv("C:\\Users\\acer\\Downloads\\data.csv",low_memory=False)
+df
+selected = ['India', 'United States', 'Brazil', 'Germany', 'Japan']
+filtered = df[df['location'].isin(selected)].copy()  # <- make a copy to avoid warning
+
+filtered.loc[:, 'people_fully_vaccinated'] = pd.to_numeric(filtered['people_fully_vaccinated'], errors='coerce')
+filtered.loc[:, 'total_vaccinations'] = pd.to_numeric(filtered['total_vaccinations'], errors='coerce')
+latest = filtered.sort_values('date').groupby('location').last()
+
+labels = latest.index
+total = latest['total_vaccinations']
+fully = latest['people_fully_vaccinated']
+
+fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+
+ax[0].pie(total, labels=labels, startangle=90, autopct='%1.1f%%', wedgeprops={'width': 0.4})
+ax[0].set_title("Total Vaccinations (Doughnut)")
+
+ax[1].pie(fully, labels=labels, startangle=90, autopct='%1.1f%%', wedgeprops={'width': 0.4})
+ax[1].set_title("Fully Vaccinated People (Doughnut)")
+
+
