@@ -16,7 +16,6 @@ Time Span: Begins from early 2021
 
 📊 Project Features
 Data Cleaning and Preprocessing
-
 Time-Series Analysis of Vaccination Trends
 
 Country-wise Vaccination Comparison
